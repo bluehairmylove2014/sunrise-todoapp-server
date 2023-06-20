@@ -1,0 +1,84 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "email": "example1@example.com",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "full_name": "John Doe",
+      "age": 30
+    },
+    {
+      "id": 2,
+      "email": "example2@example.com",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "full_name": "Jane Smith",
+      "age": 25
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task@1",
+      "uid": 1,
+      "status": "Backlog",
+      "tags": [
+        {
+          "tag_name": "Research",
+          "background_color": "orange"
+        }
+      ],
+      "task_name": "Auditing information architecture",
+      "description": "Create content for peceland App",
+      "due_date": "May 30, 2023, 6:31 PM",
+      "priority": "Negligible"
+    },
+    {
+      "id": "task@2",
+      "uid": 1,
+      "status": "To Do",
+      "tags": [
+        {
+          "tag_name": "Development",
+          "background_color": "blue"
+        }
+      ],
+      "task_name": "Implement login functionality",
+      "description": "Add login feature to peceland App",
+      "due_date": "May 25, 2023, 1:31 PM",
+      "priority": "Minor"
+    },
+    {
+      "id": "task@3",
+      "uid": 1,
+      "status": "Done",
+      "tags": [
+        {
+          "tag_name": "Kfresh",
+          "background_color": "#7543a8"
+        },
+        {
+          "tag_name": "Coding",
+          "background_color": "#a69c17"
+        }
+      ],
+      "task_name": "Doing unit test - Exercise 4",
+      "description": "Using react-test-library to test todo application",
+      "due_date": "Jun 16, 2023, 1:05 PM",
+      "priority": "Critical"
+    },
+    {
+      "id": "task@4",
+      "uid": 1,
+      "status": "Process",
+      "tags": [
+        {
+          "tag_name": "Code review",
+          "background_color": "#9e3e0a"
+        }
+      ],
+      "task_name": "Complete Project Proposal",
+      "description": "I love you",
+      "due_date": "Jun 23, 2023, 8:19 PM",
+      "priority": "Significant"
+    }
+  ]
+}
