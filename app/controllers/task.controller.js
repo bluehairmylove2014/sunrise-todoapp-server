@@ -60,8 +60,12 @@ exports.editTask = function (req, res) {
 };
 
 exports.createNewTask = function (req, res) {
+    console.log('run create new task')
     const uid = req.user_id;
     const tdata = req.body.task_data;
+    console.log('Receive: ')
+    console.log('uid: ', uid)
+    console.log('task data: ', tdata)
 
     try {
         const jsonData = readJsonData();
@@ -71,10 +75,13 @@ exports.createNewTask = function (req, res) {
             ...tdata
         };
 
+        console.log('Your new task: ', newTask)
         jsonData.tasks.push(newTask);
         writeJsonData(jsonData);
+        console.log('Add task successfully')
         res.status(200).json(newTask);
     } catch (err) {
+        console.log('Error when adding task')
         res.status(500).json({ error: err });
     }
 };
