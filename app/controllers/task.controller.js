@@ -1,85 +1,106 @@
+// Import necessary modules
 const mongoose = require('mongoose');
 const Task = require('../db/models/task'); // Import the Task model
 
-// Get all tasks
+// Function to get all tasks
 exports.getAllTasks = async function (req, res) {
-    const UID = req.user_id; // Get from middleware
+    const UID = req.user_id; // Get user id from middleware
 
     try {
+        // Find all tasks that belong to the user
         const tasks = await Task.find({ uid: UID });
-        console.log(tasks)
+        // Send the tasks as a response
         res.status(200).json(tasks);
     } catch (err) {
+        // If an error occurs, send an error message
         res.status(500).json({ error: err });
     }
 };
 
-// Get all tasks by names
+// Function to get all tasks by names
 exports.getAllTaskByNames = async function (req, res) {
-    const UID = req.user_id; // Get from middleware
-    const task_name = req.query.task_name;
+    const UID = req.user_id; // Get user id from middleware
+    const task_name = req.query.task_name; // Get task name from request query
 
     try {
+        // Find all tasks that belong to the user and match the task name
         const tasks = await Task.find({ uid: UID, task_name: { $regex: task_name, $options: 'i' } });
+        // Send the tasks as a response
         res.status(200).json(tasks);
     } catch (err) {
+        // If an error occurs, send an error message
         res.status(500).json({ error: err });
     }
 };
 
-// Edit task
-exports.editTask = async function (req, res) {
-    const tid = req.body.task_id;
-    const tdata = req.body.task_data;
-
-    try {
-        const task = await Task.findByIdAndUpdate(tid, tdata, { new: true });
-
-        if (!task) {
-            res.status(404).json({ message: 'Task not found' });
-        } else {
-            res.status(200).json(task);
-        }
-    } catch (err) {
-        res.status(500).json({ error: err });
-    }
-};
-
-// Create new task
+// Function to create a new task
 exports.createNewTask = async function (req, res) {
-    const uid = req.user_id;
-    const tdata = req.body.task_data;
-    console.log('Receive: ')
-    console.log('uid: ', uid)
-    console.log('task data: ', tdata)
+    const uid = req.user_id; // Get user id from middleware
+    const tdata = req.body.task_data; // Get task data from request body
 
     try {
+        // Create a new task with the user id and task data
         const newTask = new Task({
             uid,
             ...tdata
         });
 
+        // Save the new task to the database
         await newTask.save();
+        // Send the new task as a response
         res.status(200).json(newTask);
     } catch (err) {
-        console.log('Error when adding task')
+        // If an error occurs, send an error message
         res.status(500).json({ error: err });
     }
 };
 
-// Delete task
-exports.deleteTask = async function (req, res) {
+// Function to edit a task
+exports.editTask = async function (req, res) {
+    const uid = req.user_id; // Get user id from middleware
     const tid = req.body.task_id; // Get task id from request body
+    const tdata = req.body.task_data; // Get task data from request body
+    tdata.uid = uid;
 
     try {
-        const task = await Task.findByIdAndDelete(tid); // Find and delete task by id
+        // Find the task by tid and update it with the new data
+
+        const task = await Task.findOneAndUpdate({ tid: tid }, tdata, { new: true });
+        console.log("Task is: ", task)
 
         if (!task) {
-            res.status(404).json({ message: 'Task not found' }); // If task not found, return 404
+            // If the task is not found, send a message
+            res.status(404).json({ message: 'Task not found' });
         } else {
-            res.status(200).json({ message: 'Task deleted' }); // If task found and deleted, return 200
+            // If the task is found and updated, send the updated task as a response
+            res.status(200).json(task);
+        }
+
+    } catch (err) {
+        // If an error occurs, send an error message
+        console.log(err)
+        res.status(500).json({ error: err });
+    }
+};
+
+// Function to delete a task
+exports.deleteTask = async function (req, res) {
+    const tid = req.body.tid; // Get task id from request body
+    console.log(tid)
+
+    try {
+        // Find the task by id and delete it
+        const task = await Task.findOneAndDelete({ tid: tid });
+
+        if (!task) {
+            // If the task is not found, send a message
+            res.status(404).json({ message: 'Task not found' });
+        } else {
+            // If the task is found and deleted, send a message
+            res.status(200).json({ message: 'Task deleted' });
         }
     } catch (err) {
-        res.status(500).json({ error: err }); // If error occurred, return 500
+        // If an error occurs, send an error message
+        res.status(500).json({ error: err });
     }
 };
