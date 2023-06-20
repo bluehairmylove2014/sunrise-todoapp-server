@@ -7,6 +7,7 @@ exports.getAllTasks = async function (req, res) {
 
     try {
         const tasks = await Task.find({ uid: UID });
+        console.log(tasks)
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ error: err });
