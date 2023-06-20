@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const db = require('./app/db'); // Import the database connection
 
 const app = express();
 app.use(express.json());
@@ -26,5 +27,8 @@ app.use(function (req, res, next) {
 // use router - index.js
 const route = require("./app/routes")
 route(app);
+
+// database connection
+db.connect(); // Call the database connection
 
 module.exports = app;

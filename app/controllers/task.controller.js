@@ -1,66 +1,51 @@
+const mongoose = require('mongoose');
+const Task = require('../db/models/task'); // Import the Task model
 
-
-const fs = require('fs');
-const path = require('path');
-
-// Đọc dữ liệu từ file db.json
-function readJsonData() {
-    const rawData = fs.readFileSync(path.join(__dirname, '..', 'db', 'db.json'));
-    return JSON.parse(rawData);
-}
-
-// Ghi dữ liệu vào file db.json
-function writeJsonData(jsonData) {
-    fs.writeFileSync(path.join(__dirname, '..', 'db', 'db.json'), JSON.stringify(jsonData, null, 2));
-}
-
-exports.getAllTasks = function (req, res) {
+// Get all tasks
+exports.getAllTasks = async function (req, res) {
     const UID = req.user_id; // Get from middleware
 
     try {
-        const jsonData = readJsonData();
-        const tasks = jsonData.tasks.filter(task => task.uid === UID);
+        const tasks = await Task.find({ uid: UID });
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ error: err });
     }
 };
 
-exports.getAllTaskByNames = function (req, res) {
+// Get all tasks by names
+exports.getAllTaskByNames = async function (req, res) {
     const UID = req.user_id; // Get from middleware
     const task_name = req.query.task_name;
 
     try {
-        const jsonData = readJsonData();
-        const tasks = jsonData.tasks.filter(task => task.uid === UID && task.task_name.includes(task_name));
+        const tasks = await Task.find({ uid: UID, task_name: { $regex: task_name, $options: 'i' } });
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ error: err });
     }
 };
 
-exports.editTask = function (req, res) {
+// Edit task
+exports.editTask = async function (req, res) {
     const tid = req.body.task_id;
     const tdata = req.body.task_data;
 
     try {
-        const jsonData = readJsonData();
-        const taskIndex = jsonData.tasks.findIndex(task => task.id === tid);
+        const task = await Task.findByIdAndUpdate(tid, tdata, { new: true });
 
-        if (taskIndex === -1) {
+        if (!task) {
             res.status(404).json({ message: 'Task not found' });
         } else {
-            jsonData.tasks[taskIndex] = { ...jsonData.tasks[taskIndex], ...tdata };
-            writeJsonData(jsonData);
-            res.status(200).json(jsonData.tasks[taskIndex]);
+            res.status(200).json(task);
         }
     } catch (err) {
         res.status(500).json({ error: err });
     }
 };
 
-exports.createNewTask = function (req, res) {
-    console.log('run create new task')
+// Create new task
+exports.createNewTask = async function (req, res) {
     const uid = req.user_id;
     const tdata = req.body.task_data;
     console.log('Receive: ')
@@ -68,17 +53,12 @@ exports.createNewTask = function (req, res) {
     console.log('task data: ', tdata)
 
     try {
-        const jsonData = readJsonData();
-        const newTask = {
-            id: `task@${jsonData.tasks.length + 1}`,
+        const newTask = new Task({
             uid,
             ...tdata
-        };
+        });
 
-        console.log('Your new task: ', newTask)
-        jsonData.tasks.push(newTask);
-        writeJsonData(jsonData);
-        console.log('Add task successfully')
+        await newTask.save();
         res.status(200).json(newTask);
     } catch (err) {
         console.log('Error when adding task')
@@ -86,21 +66,19 @@ exports.createNewTask = function (req, res) {
     }
 };
 
-exports.deleteTask = function (req, res) {
-    const task_id = req.body.tid;
+// Delete task
+exports.deleteTask = async function (req, res) {
+    const tid = req.body.task_id; // Get task id from request body
 
     try {
-        const jsonData = readJsonData();
-        const taskIndex = jsonData.tasks.findIndex(task => task.id === task_id);
+        const task = await Task.findByIdAndDelete(tid); // Find and delete task by id
 
-        if (taskIndex === -1) {
-            res.status(404).json({ message: 'Task not found' });
+        if (!task) {
+            res.status(404).json({ message: 'Task not found' }); // If task not found, return 404
         } else {
-            jsonData.tasks.splice(taskIndex, 1);
-            writeJsonData(jsonData);
-            res.status(200).json({ message: 'Task deleted' });
+            res.status(200).json({ message: 'Task deleted' }); // If task found and deleted, return 200
         }
     } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err }); // If error occurred, return 500
     }
 };
