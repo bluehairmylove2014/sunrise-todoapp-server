@@ -8,20 +8,11 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (origin.startsWith('http://www.sunrise-continent.online/')) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-};
-
+const corsOptions = { origin: false };
 app.use(cors(corsOptions));
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "http://www.sunrise-continent.online/");
   res.header("Access-Control-Allow-Credentials", true);
   res.header(
     "Access-Control-Allow-Headers",
