@@ -24,12 +24,13 @@ exports.handleLogin = function (req, res) {
         // Search for account based on email and password
         Account.findOne({ email: req.body.email, password: req.body.password })
             .then(account => {
+                account = account.toObject();
                 if (!account) {
                     // Wrong email or password
                     res.status(401).json({ code: 401, message: 'wrong email or password' });
                 } else {
-                    const expiresIn = '1h';
-                    const tokenPayload = { user_id: account.id };
+                    const expiresIn = '24h';
+                    const tokenPayload = { user_id: account.uid };
                     const jwtBearerToken = jwt.sign(tokenPayload, PRIVATE_KEY, { algorithm: 'RS256', expiresIn });
 
                     res.status(200).json({ code: 200, token: jwtBearerToken }); // Return JWT token and expiration time
