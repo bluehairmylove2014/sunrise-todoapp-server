@@ -66,7 +66,6 @@ exports.editTask = async function (req, res) {
         // Find the task by tid and update it with the new data
 
         const task = await Task.findOneAndUpdate({ tid: tid }, tdata, { new: true });
-        console.log("Task is: ", task)
 
         if (!task) {
             // If the task is not found, send a message
@@ -86,8 +85,6 @@ exports.editTask = async function (req, res) {
 // Function to delete a task
 exports.deleteTask = async function (req, res) {
     const tid = req.body.tid; // Get task id from request body
-    console.log(tid)
-
     try {
         // Find the task by id and delete it
         const task = await Task.findOneAndDelete({ tid: tid });

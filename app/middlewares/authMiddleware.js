@@ -9,11 +9,13 @@ const authenticateJWT = (req, res, next) => {
         return res.sendStatus(401);
     }
 
+    // console.log("Receive token: ", token)
     jwt.verify(token, PRIVATE_KEY, (err, decoded) => {
         if (err) {
             return res.sendStatus(401);
         }
         req.user_id = decoded.user_id;
+        // console.log("decoded: ", decoded)
         next();
     });
 };
