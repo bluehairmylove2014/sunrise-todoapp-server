@@ -31,22 +31,6 @@ exports.getAllTestTasks = async function (req, res) {
     }
 }
 
-// Function to get all tasks by names
-exports.getAllTaskByNames = async function (req, res) {
-    const UID = req.user_id; // Get user id from middleware
-    const task_name = req.query.task_name; // Get task name from request query
-
-    try {
-        // Find all tasks that belong to the user and match the task name
-        const tasks = await Task.find({ uid: UID, task_name: { $regex: task_name, $options: 'i' } });
-        // Send the tasks as a response
-        res.status(200).json(tasks);
-    } catch (err) {
-        // If an error occurs, send an error message
-        res.status(500).json({ error: err });
-    }
-};
-
 // Function to create a new task
 exports.createNewTask = async function (req, res) {
     const uid = req.user_id; // Get user id from middleware
@@ -115,3 +99,48 @@ exports.deleteTask = async function (req, res) {
         res.status(500).json({ error: err });
     }
 };
+
+// Function to get tasks with filter options
+exports.getTasksWithCriterial = async function (req, res) {
+    const UID = req.user_id; // Get user id from middleware
+    const { priority, status, start_date, end_date, task_name } = req.query; // Get filter options from request query
+    try {
+        // Create a filter object
+        // let filter = { uid: UID };
+        let filter = { };
+
+        // Add filter options to the filter object if they exist
+        if (priority && priority.trim().length) filter.priority = priority;
+        if (status && status.trim().length) filter.status = status;
+        if (task_name && task_name.trim().length) filter.task_name = { $regex: task_name, $options: 'i' };
+        // Convert start_date and end_date to Date objects
+        // If both start_date and end_date exist, add the date range to the filter
+        if (start_date && end_date) {
+            let startDate = new Date(start_date).toISOString();
+            let endDate = new Date(end_date).toISOString();
+            filter.$or = [{ due_date: { $gte: startDate, $lte: endDate } }, { due_date: null }];
+        }
+        // If only start_date exists, add it to the filter
+        else if (start_date) {
+            let startDate = new Date(start_date).toISOString();
+            filter.$or = [{ due_date: { $gte: startDate } }, { due_date: null }];
+        }
+        // If only end_date exists, add it to the filter
+        else if (end_date) {
+            let endDate = new Date(end_date).toISOString();
+            filter.$or = [{ due_date: { $lte: endDate } }, { due_date: null }];
+        }
+        // If neither exist, do not add anything to the filter
+
+        // Find all tasks that match the filter
+        const tasks = await Task.find(filter);
+
+        // Send the tasks as a response
+        res.status(200).json(tasks);
+    } catch (err) {
+        // If an error occurs, send an error message
+        console.log(err)
+        res.status(500).json({ error: err });
+    }
+};
+

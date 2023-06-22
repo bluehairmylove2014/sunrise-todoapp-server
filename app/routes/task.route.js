@@ -5,7 +5,7 @@ const authenticateJWT = require('../middlewares/authMiddleware');
 const {
     getAllTasks,
     getAllTestTasks,
-    getAllTaskByNames,
+    getTasksWithCriterial,
     editTask,
     createNewTask,
     deleteTask
@@ -13,7 +13,7 @@ const {
 
 router.get("/getAllTasks", authenticateJWT, getAllTasks);
 router.get("/test-getAllTasks", getAllTestTasks);
-router.get("/getAllTaskByNames", authenticateJWT, getAllTaskByNames);
+router.get("/getTasksWithCriterial", authenticateJWT, getTasksWithCriterial);
 
 router.put("/editTask", authenticateJWT, editTask);
 router.post("/createNewTask", authenticateJWT, createNewTask);
