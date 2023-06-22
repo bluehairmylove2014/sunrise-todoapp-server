@@ -4,6 +4,7 @@ const authenticateJWT = require('../middlewares/authMiddleware');
 
 const {
     getAllTasks,
+    getAllTestTasks,
     getAllTaskByNames,
     editTask,
     createNewTask,
@@ -11,6 +12,7 @@ const {
 } = require("../controllers/task.controller");
 
 router.get("/getAllTasks", authenticateJWT, getAllTasks);
+router.get("/test-getAllTasks", getAllTestTasks);
 router.get("/getAllTaskByNames", authenticateJWT, getAllTaskByNames);
 
 router.put("/editTask", authenticateJWT, editTask);

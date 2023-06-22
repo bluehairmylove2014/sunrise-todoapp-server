@@ -17,6 +17,20 @@ exports.getAllTasks = async function (req, res) {
     }
 };
 
+exports.getAllTestTasks = async function (req, res) {
+    const UID = 1; // Default test user id
+
+    try {
+        // Find all tasks that belong to the user
+        const tasks = await Task.find({ uid: UID });
+        // Send the tasks as a response
+        res.status(200).json(tasks);
+    } catch (err) {
+        // If an error occurs, send an error message
+        res.status(500).json({ error: err });
+    }
+}
+
 // Function to get all tasks by names
 exports.getAllTaskByNames = async function (req, res) {
     const UID = req.user_id; // Get user id from middleware
