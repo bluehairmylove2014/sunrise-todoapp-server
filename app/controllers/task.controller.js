@@ -40,6 +40,7 @@ exports.createNewTask = async function (req, res) {
         // Create a new task with the user id and task data
         const newTask = new Task({
             uid,
+            tid: `task@${(await Task.find({})).length + 1}`,
             ...tdata
         });
 
